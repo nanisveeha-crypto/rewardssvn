@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVNTEX Admin - Reward Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .login-box {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-new { background: #e3f2fd; color: #1976d2; }
+    </style>
+</head>
+<body>
+    <div id="admin-app" class="admin-container">
+        <header>
+            <h1 class="gradient-text">SVNTEX Admin</h1>
+            <p>Manage Q&A Responses and Rewards</p>
+            <button id="logout-btn" style="display: none; float: right; padding: 8px 16px; margin-top: -50px;">Logout</button>
+        </header>
+
+        <!-- Login Section -->
+        <div id="login-section" class="glassmorphism login-box">
+            <h2>Admin Login</h2>
+            <div class="qa-item">
+                <label>Email</label>
+                <input type="email" id="admin-email" placeholder="admin@svntex.in">
+            </div>
+            <div class="qa-item">
+                <label>Password</label>
+                <input type="password" id="admin-password">
+            </div>
+            <button id="admin-login-btn" class="submit-btn">Login</button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" style="display: none;">
+            <div class="glassmorphism" style="max-width: none; text-align: left;">
+                <h3>All Responses</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Amount</th>
+                                <th>Payment</th>
+                                <th>Rating</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="responses-table-body">
+                            <!-- Data will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVNTEX Reward Center</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for Premium Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="app" class="glassmorphism">
+        <header>
+            <h1 class="gradient-text">SVNTEX Rewards</h1>
+            <p>Answer a few questions and claim your <strong>exclusive reward</strong>.</p>
+        </header>
+
+        <main id="qa-container">
+            <div id="loader" class="loader">Loading your rewards...</div>
+            <div id="qa-form" style="display: none;">
+                <!-- Questions will be injected here -->
+            </div>
+            <div id="success-screen" style="display: none;">
+                <div class="reward-box">
+                    <h2>🎉 Success!</h2>
+                    <p>Your reward code is:</p>
+                    <div class="coupon-code">SVNTEX-REWARD-10</div>
+                    <button class="copy-btn">Copy Code</button>
+                    <p class="terms">Valid for your next purchase at mysvntex.in</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2026 SVNTEX Marketing Pvt Ltd. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

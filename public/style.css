@@ -1,0 +1,165 @@
+:root {
+    --primary: #6e8efb;
+    --secondary: #a777e3;
+    --text: #333;
+    --white: #ffffff;
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --glass: rgba(255, 255, 255, 0.85);
+    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text);
+}
+
+.glassmorphism {
+    background: var(--glass);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    text-align: center;
+}
+
+header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.gradient-text {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+header p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.qa-item {
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.qa-item label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.qa-item input[type="text"],
+.qa-item select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.qa-item input[type="text"]:focus,
+.qa-item select:focus {
+    border-color: var(--primary);
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.option-btn {
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.option-btn:hover, .option-btn.selected {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    margin-top: 20px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4);
+    transition: transform 0.2s;
+}
+
+.submit-btn:hover {
+    transform: scale(1.02);
+}
+
+.reward-box {
+    background: #f0f4ff;
+    padding: 30px;
+    border-radius: 16px;
+    margin-top: 20px;
+}
+
+.coupon-code {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.8rem;
+    padding: 15px;
+    background: white;
+    border: 2px dashed var(--primary);
+    border-radius: 8px;
+    margin: 20px 0;
+    letter-spacing: 2px;
+    color: var(--primary);
+}
+
+.copy-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+footer {
+    margin-top: 40px;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.loader {
+    padding: 40px;
+    font-style: italic;
+    color: #666;
+}
