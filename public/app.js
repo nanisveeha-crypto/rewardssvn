@@ -20,33 +20,26 @@ if (!firebase.apps.length) {
 window.db = firebase.firestore();
 window.analytics = (typeof firebase.analytics === 'function') ? firebase.analytics() : null;
 
-// Questions Data (Could be fetched from Firestore 'questions' collection)
-const QUESTIONS = [
-    { id: "exp", text: "How would you rate your overall shopping experience?", type: "rating" },
-    { id: "ref", text: "How did you discover SVNTEX?", type: "mcq", options: ["Social Media", "Friend/Family", "Advertisement", "Search Engine", "Other"] },
-    { id: "prod", text: "Which product are you most looking forward to using?", type: "text" },
-    { id: "rec", text: "Would you recommend us to others?", type: "binary" }
-];
+// Global Questions state (fetched from Firestore)
+let QUESTIONS = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('order_id');
-    const email = urlParams.get('email') || '';
-
-    const qaContainer = document.getElementById('qa-form');
+    
     const loader = document.getElementById('loader');
+    const qaContainer = document.getElementById('qa-form');
 
     if (!orderId) {
         loader.innerHTML = "<span style='color: red;'>Error: Invalid Reward Link. Please check your order reference.</span>";
         return;
     }
 
-    // Prepare Document ID (Now using just the unique Shopify Order ID)
     const docId = orderId.trim();
     const docRef = db.collection('responses').doc(docId);
 
-    // Load Questions or Show Duplicate Message
     try {
+        // 1. Check for Duplicate Claim
         const doc = await docRef.get();
         if (doc.exists && doc.data().answers) {
             const prevData = doc.data();
@@ -59,21 +52,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <h2 style="color: #fff;">🎁 Reward Already Claimed!</h2>
                     <p style="color: #fff; margin-bottom: 20px;">You completed this Q&A on: <br><strong>${submitTime}</strong></p>
                     <p style="color: #fff; opacity:0.8; font-size: 0.9rem;">Order: ${svnId}</p>
-                    <div style="margin-top: 20px; font-size: 0.8rem; color: #aaa;">Reference ID: ${docId}</div>
                     <button onclick="window.location.reload()" class="option-btn" style="width: auto; margin-top: 20px; padding: 10px 20px;">Check Again</button>
                 </div>
             `;
             qaContainer.style.display = 'block';
             return;
         }
+
+        // 2. Fetch Questions from Firestore
+        const qSnap = await db.collection('questions').orderBy('order', 'asc').get();
+        if (qSnap.empty) {
+            loader.innerHTML = "No questions available at the moment. Please try again later.";
+            return;
+        }
+
+        QUESTIONS = qSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        loader.style.display = 'none';
+        qaContainer.style.display = 'block';
+        renderQuestions(qaContainer);
+
     } catch (e) {
-        console.error("Duplicate check failed:", e);
+        console.error("Initialization Failed:", e);
+        loader.innerHTML = "Error loading rewards platform. Please refresh.";
     }
-
-    loader.style.display = 'none';
-    qaContainer.style.display = 'block';
-
-    renderQuestions(qaContainer);
 });
 
 function renderQuestions(container) {

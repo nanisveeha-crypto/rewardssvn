@@ -3,62 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVNTEX Admin - Reward Management</title>
+    <title>SVNTEX Admin - Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700&display=swap" rel="stylesheet">
     <style>
-        .admin-container {
-            max-width: 1200px;
-            width: 95%;
-            margin: 20px auto;
+        :root {
+            --sidebar-width: 260px;
+        }
+        body {
+            display: block;
+            background: #f4f7fe;
+            min-height: 100vh;
+        }
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #1e1e2d;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border-left: 4px solid #6e8efb;
+        }
+        .sidebar-footer {
             padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+        }
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Widgets/Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
             background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-card .label { color: #888; font-size: 0.9rem; font-weight: 600; }
+        .stat-card .value { font-size: 1.8rem; font-weight: 800; margin-top: 5px; color: #1e1e2d; }
+
+        /* Forms in Admin */
+        .admin-form {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .question-list-item {
+            background: white;
+            padding: 20px;
             border-radius: 12px;
-            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar-header h2, .menu-item span { display: none; }
+            .main-content { margin-left: 70px; }
         }
-        th {
-            background: #f8f9fa;
-            font-weight: 800;
-            color: var(--primary);
-        }
-        .login-box {
-            max-width: 400px;
-            margin: 100px auto;
-        }
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        .status-new { background: #e3f2fd; color: #1976d2; }
-        .status-pending { background: #fff8e1; color: #f57f17; }
+
+        /* Status Badges */
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
         .status-paid { background: #e8f5e9; color: #2e7d32; }
-        .status-refunded { background: #fce4ec; color: #c2185b; }
-        .status-voided { background: #fafafa; color: #616161; }
+        .status-pending { background: #fff8e1; color: #f57f17; }
+        .status-voided { background: #f5f5f5; color: #616161; }
     </style>
 </head>
 <body>
-    <div id="admin-app" class="admin-container">
-        <header>
-            <h1 class="gradient-text">SVNTEX Admin</h1>
-            <p>Manage Q&A Responses and Rewards</p>
-            <button id="logout-btn" style="display: none; float: right; padding: 8px 16px; margin-top: -50px;">Logout</button>
-        </header>
-
+    <div id="admin-app">
         <!-- Login Section -->
-        <div id="login-section" class="glassmorphism login-box">
-            <h2>Admin Login</h2>
+        <div id="login-section" class="glassmorphism login-box" style="margin: 100px auto;">
+            <h1 class="gradient-text">SVNTEX Admin</h1>
+            <p>Please log in to manage your rewards platform.</p>
             <div class="qa-item">
                 <label>Email</label>
                 <input type="email" id="admin-email" placeholder="admin@svntex.in">
@@ -67,41 +149,129 @@
                 <label>Password</label>
                 <input type="password" id="admin-password">
             </div>
-            <button id="admin-login-btn" class="submit-btn">Login</button>
+            <button id="admin-login-btn" class="submit-btn">Login to Dashboard</button>
         </div>
 
         <!-- Dashboard Section -->
-        <div id="dashboard-section" style="display: none;">
-            <div class="glassmorphism" style="max-width: none; text-align: left;">
-                <div class="dashboard-header" style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="margin:0;">Manage Q&A Responses and Rewards</h2>
-                    <div style="text-align: right;">
-                        <span id="total-count" style="margin-right: 15px; font-weight: 600; color: #666;">Total Orders: 0</span>
-                        <button id="refresh-btn" class="submit-btn" style="padding: 8px 15px; font-size: 0.9rem;">Refresh Data</button>
-                    </div>
+        <div id="dashboard-section" class="admin-layout" style="display: none;">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>SVNTEX ADM</h2>
                 </div>
+                <nav class="sidebar-menu">
+                    <a class="menu-item active" data-section="welcome">
+                        <span>🏠 Welcome Dashboard</span>
+                    </a>
+                    <a class="menu-item" data-section="questions">
+                        <span>📝 Manage Questions</span>
+                    </a>
+                    <a class="menu-item" data-section="responses">
+                        <span>📊 Rewards Management</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <button id="logout-btn" class="submit-btn" style="padding: 10px; margin: 0; font-size: 0.9rem;">🚪 Logout</button>
+                </div>
+            </aside>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>SVN ID</th>
-                                <th>Order #</th>
-                                <th>Customer</th>
-                                <th>Email</th>
-                                <th>Mobile</th>
-                                <th>Amount</th>
-                                <th>Payment</th>
-                                <th>Rating</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="responses-table-body">
-                            <!-- Data will be loaded via admin.js -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- Main Content Area -->
+            <main class="main-content">
+                
+                <!-- 1. Welcome View -->
+                <section id="welcome-view" class="view-section" style="display: block;">
+                    <h1 class="gradient-text">Welcome, Admin!</h1>
+                    <p style="margin-bottom: 30px; color: #666;">Here is an overview of your reward activity.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="label">Total Orders</span>
+                            <span class="value" id="stat-total-orders">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="label">Rewards Claimed (Q&A)</span>
+                            <span class="value" id="stat-claimed">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="label">Recent Revenue (Sample)</span>
+                            <span class="value" id="stat-revenue">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="admin-form">
+                        <h3>Quick Actions</h3>
+                        <p style="color: #888; font-size: 0.9rem; margin-bottom: 15px;">Jump directly to management pages.</p>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="document.querySelector('[data-section=\'responses\']').click()" class="submit-btn" style="width: auto; padding: 10px 20px; font-size: 0.9rem;">View All Responses</button>
+                            <button onclick="document.querySelector('[data-section=\'questions\']').click()" class="submit-btn" style="width: auto; padding: 10px 20px; font-size: 0.9rem; background: #6e8efb;">Edit Questions</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Manage Questions View -->
+                <section id="questions-view" class="view-section">
+                    <h1 class="gradient-text">Manage Questions</h1>
+                    <p style="margin-bottom: 30px; color: #666;">Set up the questions customers see in the reward form.</p>
+                    
+                    <div class="admin-form">
+                        <h3>Add New Question</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                            <div class="qa-item">
+                                <label>Question Text</label>
+                                <input type="text" id="q-text" placeholder="e.g. How did you find us?">
+                            </div>
+                            <div class="qa-item">
+                                <label>Type</label>
+                                <select id="q-type">
+                                    <option value="rating">Rating (1-5)</option>
+                                    <option value="mcq">MCQ (Multiple Choice)</option>
+                                    <option value="binary">Yes / No</option>
+                                    <option value="text">Text Box</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="q-options-container" class="qa-item" style="display: none;">
+                            <label>Options (comma separated)</label>
+                            <input type="text" id="q-options" placeholder="Social Media, Search, Friend...">
+                        </div>
+                        <button id="add-q-btn" class="submit-btn" style="width: auto; padding: 10px 30px;">Add Question</button>
+                    </div>
+
+                    <div id="questions-list-container">
+                        <!-- Questions will be listed here -->
+                    </div>
+                </section>
+
+                <!-- 3. Rewards Management View -->
+                <section id="responses-view" class="view-section">
+                    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h1 class="gradient-text" style="margin:0;">Rewards Management</h1>
+                        <button id="refresh-btn" class="submit-btn" style="width: auto; padding: 10px 20px; font-size: 0.9rem; margin: 0;">🔄 Refresh Data</button>
+                    </div>
+                    
+                    <div class="admin-form" style="padding: 0; overflow-x: auto;">
+                        <table style="margin-top: 0; border-radius: 0;">
+                            <thead>
+                                <tr>
+                                    <th>SVN ID</th>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Rating</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="responses-table-body">
+                                <!-- Data will be loaded via admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </main>
         </div>
     </div>
 
@@ -109,6 +279,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="admin.js?v=1.1"></script>
+    <script src="admin.js?v=1.2"></script>
 </body>
 </html>
