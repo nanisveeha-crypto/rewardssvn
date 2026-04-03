@@ -72,6 +72,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         qaContainer.style.display = 'block';
         renderQuestions(qaContainer);
 
+    // --- Language Switcher Logic ---
+window.changeLanguage = (code) => {
+    const select = document.querySelector('.goog-te-combo');
+    if (select) {
+        select.value = code;
+        select.dispatchEvent(new Event('change'));
+    }
+    
+    // UI Update (Visual feedback for the active button)
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText.toLowerCase().includes(code) || (code === 'te' && btn.innerText === 'తెలుగు') || (code === 'hi' && btn.innerText === 'हिंदी')) {
+            btn.classList.add('active');
+        }
+    });
+};
     } catch (e) {
         console.error("Initialization Failed:", e);
         loader.innerHTML = "Error loading rewards platform. Please refresh.";

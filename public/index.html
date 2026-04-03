@@ -13,6 +13,13 @@
 
 <body>
     <div id="app" class="glassmorphism">
+        <!-- Language Switcher -->
+        <div class="lang-switcher">
+            <button onclick="changeLanguage('en')" class="lang-btn">EN</button>
+            <button onclick="changeLanguage('te')" class="lang-btn">తెలుగు</button>
+            <button onclick="changeLanguage('hi')" class="lang-btn">हिंदी</button>
+        </div>
+
         <header>
             <h1 class="gradient-text">SVNTEX Rewards</h1>
             <p>Answer a few questions and claim your <strong>exclusive reward</strong>.</p>
@@ -39,11 +46,21 @@
         </footer>
     </div>
 
+    <!-- Google Translate (Hidden) -->
+    <div id="google_translate_element" style="display:none"></div>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics-compat.js"></script>
-    <script src="app.js?v=1.1"></script>
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script src="app.js?v=1.2"></script>
 </body>
 
 </html>
