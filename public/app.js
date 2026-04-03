@@ -79,23 +79,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// --- Language Switcher Logic (Global Scope) ---
-window.changeLanguage = (code) => {
+// --- Language Switcher Logic (Global Scope with Smart Retry) ---
+window.changeLanguage = (code, retries = 0) => {
     const select = document.querySelector('.goog-te-combo');
+    const buttons = document.querySelectorAll('.lang-btn');
+    const activeBtn = Array.from(buttons).find(b => 
+        b.innerText.toLowerCase().includes(code) || 
+        (code === 'te' && b.innerText.includes('తెలుగు')) || 
+        (code === 'hi' && b.innerText.includes('हिंदी'))
+    );
+
     if (select) {
         select.value = code;
         select.dispatchEvent(new Event('change'));
         
-        // UI Update (Visual feedback for the active button)
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.remove('active');
-            const btnText = btn.innerText.toLowerCase();
-            if (btnText.includes(code) || (code === 'te' && btnText.includes('తెలుగు')) || (code === 'hi' && btnText.includes('हिंदी'))) {
-                btn.classList.add('active');
-            }
-        });
+        // UI Update (Visual feedback)
+        buttons.forEach(btn => btn.classList.remove('active'));
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        console.log(`Translation applied for: ${code}`);
     } else {
-        console.warn("Translator engine not yet loaded. Please wait a second.");
+        if (retries < 10) {
+            console.warn(`Translator engine not ready. Retrying... (${retries + 1}/10)`);
+            if (activeBtn) activeBtn.innerText = "⏳..."; // Show it's working
+            
+            setTimeout(() => {
+                // Restore button text before retrying
+                if (activeBtn) {
+                    if (code === 'en') activeBtn.innerText = 'EN';
+                    else if (code === 'te') activeBtn.innerText = 'తెలుగు';
+                    else if (code === 'hi') activeBtn.innerText = 'हिंदी';
+                }
+                window.changeLanguage(code, retries + 1);
+            }, 500);
+        } else {
+            console.error("Translator engine failed to load after 10 attempts.");
+            alert("Translation engine is taking too long. Please refresh the page.");
+        }
     }
 };
 

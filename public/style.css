@@ -164,35 +164,39 @@ footer {
     color: #666;
 }
 
-/* Language Switcher */
+/* Language Switcher (Refined for visibility) */
 .lang-switcher {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    margin-bottom: 25px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    padding-bottom: 15px;
+    gap: 10px;
+    margin: 15px 0 25px 0;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
 }
 .lang-btn {
     background: #ffffff;
-    border: 1px solid #6e8efb;
-    color: #333;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .lang-btn:hover {
     background: #f0f4ff;
-    border-color: #6e8efb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(110, 142, 251, 0.2);
 }
 .lang-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    box-shadow: 0 4px 10px rgba(110, 142, 251, 0.3);
+    background: #6e8efb;
+    color: #ffffff;
+    border-color: #6e8efb;
+    box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4);
 }
 
 /* Hide Google Translate Clutter */
