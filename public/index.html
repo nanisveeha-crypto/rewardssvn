@@ -13,19 +13,19 @@
 
 <body>
     <div id="app" class="glassmorphism">
-        <!-- Language Switcher -->
-        <div class="lang-switcher">
-            <button onclick="changeLanguage('en')" class="lang-btn">EN</button>
-            <button onclick="changeLanguage('te')" class="lang-btn">తెలుగు</button>
-            <button onclick="changeLanguage('hi')" class="lang-btn">हिंदी</button>
-        </div>
-
         <header>
             <h1 class="gradient-text">SVNTEX Rewards</h1>
             <p>Answer a few questions and claim your <strong>exclusive reward</strong>.</p>
         </header>
 
         <main id="qa-container">
+            <!-- Language Switcher (Moved here for better UX) -->
+            <div id="translator-ui" class="lang-switcher" style="display: none;">
+                <button onclick="changeLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="changeLanguage('te')" class="lang-btn">తెలుగు</button>
+                <button onclick="changeLanguage('hi')" class="lang-btn">हिंदी</button>
+            </div>
+
             <div id="loader" class="loader">Loading your rewards...</div>
             <div id="qa-form" style="display: none;">
                 <!-- Questions will be injected here -->

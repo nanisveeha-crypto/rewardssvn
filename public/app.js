@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         QUESTIONS = qSnap.docs.map(d => ({ id: d.id, ...d.data() }));
         
         loader.style.display = 'none';
+        document.getElementById('translator-ui').style.display = 'flex'; // Show translator
         qaContainer.style.display = 'block';
         renderQuestions(qaContainer);
 
