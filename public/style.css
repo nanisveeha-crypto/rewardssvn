@@ -199,7 +199,17 @@ footer {
     box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4);
 }
 
-/* Hide Google Translate Clutter */
+/* Hide Google Translate Clutter but keep it 'visible' for the script to load */
+#google_translate_element {
+    position: absolute;
+    top: -1000px;
+    left: -1000px;
+    opacity: 0;
+    pointer-events: none;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+}
 .goog-te-banner-frame {
     display: none !important;
 }
@@ -207,8 +217,5 @@ body {
     top: 0 !important;
 }
 .skiptranslate {
-    display: none !important;
-}
-#google_translate_element {
     display: none !important;
 }
