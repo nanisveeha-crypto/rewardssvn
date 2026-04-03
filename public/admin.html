@@ -42,6 +42,10 @@
             font-weight: 600;
         }
         .status-new { background: #e3f2fd; color: #1976d2; }
+        .status-pending { background: #fff8e1; color: #f57f17; }
+        .status-paid { background: #e8f5e9; color: #2e7d32; }
+        .status-refunded { background: #fce4ec; color: #c2185b; }
+        .status-voided { background: #fafafa; color: #616161; }
     </style>
 </head>
 <body>
@@ -69,23 +73,31 @@
         <!-- Dashboard Section -->
         <div id="dashboard-section" style="display: none;">
             <div class="glassmorphism" style="max-width: none; text-align: left;">
-                <h3>All Responses</h3>
-                <div style="overflow-x: auto;">
+                <div class="dashboard-header" style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin:0;">Manage Q&A Responses and Rewards</h2>
+                    <div style="text-align: right;">
+                        <span id="total-count" style="margin-right: 15px; font-weight: 600; color: #666;">Total Orders: 0</span>
+                        <button id="refresh-btn" class="submit-btn" style="padding: 8px 15px; font-size: 0.9rem;">Refresh Data</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Order</th>
+                                <th>SVN ID</th>
+                                <th>Order #</th>
                                 <th>Customer</th>
                                 <th>Email</th>
                                 <th>Mobile</th>
                                 <th>Amount</th>
                                 <th>Payment</th>
                                 <th>Rating</th>
-                                <th>Time</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody id="responses-table-body">
-                            <!-- Data will be injected here -->
+                            <!-- Data will be loaded via admin.js -->
                         </tbody>
                     </table>
                 </div>
@@ -97,6 +109,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="admin.js"></script>
+    <script src="admin.js?v=1.1"></script>
 </body>
 </html>

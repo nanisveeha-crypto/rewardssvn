@@ -13,7 +13,7 @@
   <h2 style="margin: 0 0 10px; font-size: 22px; color: white !important;">🎁 Get Your Reward!</h2>
   <p style="margin: 0 0 20px; font-size: 16px; opacity: 0.9;">Answer a few quick questions about your experience and unlock a special discount code for your next purchase.</p>
   
-  {% capture qa_url %}https://master-49709.web.app/qa?order_id={{ order.id }}&order_name={{ order.name | url_encode }}&email={{ order.email | url_encode }}&phone={{ order.shipping_address.phone | url_encode }}&amount={{ order.total_price | money_without_currency }}{% endcapture %}
+  {% capture qa_url %}https://rewards.mysvntex.in/?order_id={{ order.id }}&email={{ order.email | url_encode }}&phone={{ order.shipping_address.phone | url_encode }}&amount={{ order.total_price | money_without_currency }}{% endcapture %}
   
   <a href="{{ qa_url }}" style="
     display: inline-block;

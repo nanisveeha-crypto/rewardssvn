@@ -31,17 +31,45 @@ const QUESTIONS = [
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('order_id');
-    const email = urlParams.get('email');
+    const email = urlParams.get('email') || '';
 
     const qaContainer = document.getElementById('qa-form');
     const loader = document.getElementById('loader');
 
-    if (!orderId || !email) {
-        loader.innerHTML = "<span style='color: red;'>Error: Invalid Reward Link. Please check your order confirmation.</span>";
+    if (!orderId) {
+        loader.innerHTML = "<span style='color: red;'>Error: Invalid Reward Link. Please check your order reference.</span>";
         return;
     }
 
-    // Load Questions
+    // Prepare Document ID (Now using just the unique Shopify Order ID)
+    const docId = orderId.trim();
+    const docRef = db.collection('responses').doc(docId);
+
+    // Load Questions or Show Duplicate Message
+    try {
+        const doc = await docRef.get();
+        if (doc.exists && doc.data().answers) {
+            const prevData = doc.data();
+            const submitTime = prevData.timestamp ? prevData.timestamp.toDate().toLocaleString() : 'Recently';
+            const svnId = prevData.order_name || 'Your Order';
+
+            loader.style.display = 'none';
+            qaContainer.innerHTML = `
+                <div style="text-align:center; padding: 40px; background: rgba(255,255,255,0.1); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);">
+                    <h2 style="color: #fff;">🎁 Reward Already Claimed!</h2>
+                    <p style="color: #fff; margin-bottom: 20px;">You completed this Q&A on: <br><strong>${submitTime}</strong></p>
+                    <p style="color: #fff; opacity:0.8; font-size: 0.9rem;">Order: ${svnId}</p>
+                    <div style="margin-top: 20px; font-size: 0.8rem; color: #aaa;">Reference ID: ${docId}</div>
+                    <button onclick="window.location.reload()" class="option-btn" style="width: auto; margin-top: 20px; padding: 10px 20px;">Check Again</button>
+                </div>
+            `;
+            qaContainer.style.display = 'block';
+            return;
+        }
+    } catch (e) {
+        console.error("Duplicate check failed:", e);
+    }
+
     loader.style.display = 'none';
     qaContainer.style.display = 'block';
 
@@ -91,7 +119,6 @@ function renderQuestions(container) {
 async function submitForm() {
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('order_id');
-    const orderName = urlParams.get('order_name') || '';
     const email = urlParams.get('email');
     const phone = urlParams.get('phone') || '';
     const amount = urlParams.get('amount') || '';
@@ -121,23 +148,33 @@ async function submitForm() {
         btn.disabled = true;
         btn.innerText = "Saving...";
 
-        // Save to Firestore with merge: true to avoid losing Webhook data (Phone/Amount)
-        await db.collection('responses').doc(`${orderId}_${email.replace(/@/g, '_')}`).set({
-            order_id: orderId,
-            order_name: orderName,
-            email: email,
-            phone: phone,
-            amount: amount,
+        const cleanOrderId = orderId.trim();
+        
+        // Prepare the update object
+        const updateData = {
+            order_id: cleanOrderId,
             answers: answers,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            last_updated_at: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        // ONLY add email, phone, and amount if they are not empty.
+        // This prevents overwriting the valid data from the Shopify Webhook!
+        const cleanEmail = (email || '').toLowerCase().trim();
+        if (cleanEmail) updateData.email = cleanEmail;
+        if (phone && phone.trim() !== '') updateData.phone = phone.trim();
+        if (amount && amount.trim() !== '') updateData.amount = amount.trim();
+
+        // Save to Firestore using order_id as the unique key.
+        await db.collection('responses').doc(cleanOrderId).set(updateData, { merge: true });
 
         // Show Success
         document.getElementById('qa-form').style.display = 'none';
         document.getElementById('success-screen').style.display = 'block';
     } catch (error) {
         console.error("Error saving response:", error);
-        alert("Something went wrong. Please try again.");
+        alert("Error: " + error.message); // Show the real error to the user
         document.getElementById('submit-btn').disabled = false;
+        document.getElementById('submit-btn').innerText = "Claim My Reward";
     }
 }

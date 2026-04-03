@@ -43,40 +43,68 @@ exports.shopifyWebhook = onRequest(async (req, res) => {
 
   try {
     const order = req.body;
+    logger.info("FULL SHOPIFY ORDER:", JSON.stringify(order));
     
-    // Extract key details
-    const orderId = order.id;
-    const orderName = order.name; // This is the "SVN10429" style name
-    const email = order.email;
+    // 2. Extra Robust Extraction
+    const shopifyId = (order.id || '').toString();
+    const orderName = (order.name || '').trim(); 
+    const orderNumber = (order.order_number || '').toString();
     
-    // Better phone extraction (Check shipping, then billing, then customer)
+    // Check top-level email, then customer email
+    const email = (order.email || (order.customer && order.customer.email) || '').toLowerCase().trim();
+    
+    // EXHAUSTIVE Phone Extraction
     const phone = (order.shipping_address && order.shipping_address.phone) || 
                   (order.billing_address && order.billing_address.phone) || 
                   (order.customer && order.customer.phone) || 
-                  (order.phone) || '';
+                  (order.phone) || 
+                  (order.customer && order.customer.default_address && order.customer.default_address.phone) || '';
 
-    const total = order.total_price;
-    const financialStatus = order.financial_status; 
+    // Robust Total Extraction
+    const total = order.total_price || order.current_total_price || (order.total_price_set && order.total_price_set.shop_money && order.total_price_set.shop_money.amount) || '0.00';
+    const financialStatus = order.financial_status || 'Pending'; 
     
-    // Better name extraction
-    const customerName = (order.customer && (order.customer.first_name || order.customer.last_name)) ? 
-                        `${order.customer.first_name || ''} ${order.customer.last_name || ''}`.trim() : 
-                        (order.billing_address ? `${order.billing_address.first_name || ''} ${order.billing_address.last_name || ''}`.trim() : 'Customer');
+    // Better name extraction (Check customer, then addresses)
+    let customerName = 'Customer';
+    if (order.customer && (order.customer.first_name || order.customer.last_name)) {
+        customerName = `${order.customer.first_name || ''} ${order.customer.last_name || ''}`.trim();
+    } else if (order.billing_address) {
+        customerName = `${order.billing_address.first_name || ''} ${order.billing_address.last_name || ''}`.trim();
+    } else if (order.shipping_address) {
+        customerName = `${order.shipping_address.first_name || ''} ${order.shipping_address.last_name || ''}`.trim();
+    }
 
-    logger.info(`Received order ${orderName} (${financialStatus}) from ${email}`);
+    logger.info(`Received order ${orderName} (${financialStatus}) from ${email} (Customer: ${customerName})`);
 
-    // Create/Update document in Firestore
-    const docId = `${orderId}_${email.replace(/@/g, '_')}`;
-    await db.collection('responses').doc(docId).set({
-      order_id: orderId.toString(),
+    const checkoutToken = (order.checkout_token || '').trim();
+
+    // Debug: Save FULL payload to webhook_logs collection
+    await db.collection('webhook_logs').add({
+        order_id: shopifyId,
+        order_name: orderName,
+        email: email,
+        payload: order,
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Primary Strategy: Use the unique Shopify Order ID as the document name.
+    const targetDocId = shopifyId;
+    logger.info(`Processing order ${orderName} into document: ${targetDocId}`);
+
+    // Merge Shopify data into the document
+    await db.collection('responses').doc(targetDocId).set({
+      order_id: shopifyId,
       order_name: orderName,
+      order_number: orderNumber,
+      checkout_token: checkoutToken,
       email: email,
       phone: phone,
       amount: total,
       financial_status: financialStatus,
       customer_name: customerName,
       status: "Pending Q&A",
-      webhook_received_at: admin.firestore.FieldValue.serverTimestamp()
+      webhook_received_at: admin.firestore.FieldValue.serverTimestamp(),
+      last_updated_at: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
     res.status(200).send("Webhook processed successfully");
